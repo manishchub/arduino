@@ -18,13 +18,12 @@ const char* password = "1212121212";
 String webpage = "<!DOCTYPE html><html><head><title>Page Title</title></head><body style='background-color: #EEEEEE;'><span style='color: #003366;'><h1>Lets generate a random number</h1><p>The first random number is: <span id='rand1'>-</span></p><p>The second random number is: <span id='rand2'>-</span></p><p><button type='button' id='BTN_SEND_BACK'>Send info to ESP32</button></p></span></body><script> var Socket; document.getElementById('BTN_SEND_BACK').addEventListener('click', button_send_back); function init() { Socket = new WebSocket('ws://' + window.location.hostname + ':81/'); Socket.onmessage = function(event) { processCommand(event); }; } function button_send_back() { var msg = {brand: 'Gibson',type: 'Les Paul Studio',year: 2010,color: 'white'};Socket.send(JSON.stringify(msg)); } function processCommand(event) {var obj = JSON.parse(event.data);document.getElementById('rand1').innerHTML = obj.rand1;document.getElementById('rand2').innerHTML = obj.rand2; console.log(obj.rand1);console.log(obj.rand2); } window.onload = function(event) { init(); }</script></html>";
 
 // The JSON library uses static memory, so this will need to be allocated:
-StaticJsonDocument<200> doc_tx;                       // provision memory for about 200 characters
-StaticJsonDocument<200> doc_rx;
-StaticJsonDocument<200> doc_tx1;
+StaticJsonDocument<1024> doc_tx;                       // provision memory for about 300 characters
+StaticJsonDocument<512> doc_rx;
+
 
 //List of DLSims
 IPAddress ipAddr;
-
 
 // We want to periodically send values to the clients, so we need to define an "interval" and remember the last time we sent data to the client (with "previousMillis")
 int interval = 1000;                                  // send data to the client every 1000ms -> 1s
@@ -111,60 +110,46 @@ void webSocketEvent(byte num, WStype_t type, uint8_t * payload, size_t length) {
       // if client invoked connect api with /?tsn=9090
 
       if((String(_payload).compareTo("/?tsn=9090"))==0){
-        String _send_spi_response=read_json_file(SPIFFS,"/api_connect_reponse.json");
+        String _send_spi_response=read_json_file(SPIFFS,"/api_connect_response.json");
         //serializeJson(doc_tx,_send_spi_response);
         // send the api response to client
         webSocket.sendTXT(num,_send_spi_response);
        // Serial.println("Read from file... "+_send_spi_response);
         
       }
+
       //ipAddr = webSocket.remoteIP(num);
       //Serial.println("Clients connected " + ipAddr);
       // optionally you can add code here what to do when connected
            
       break;
     case WStype_TEXT:                                 // if a client has sent data, then type == WStype_TEXT
+      
+      
+      char * command=(char*)payload;
+      Serial.println("Got from Client: " + String(command));    
+            
       // try to decipher the JSON string received
       DeserializationError error = deserializeJson(doc_rx, payload);
+      const char * _action=doc_rx["action"];
       if (error) {
         Serial.print(F("deserializeJson() failed: "));
         Serial.println(error.f_str());
         return;
       }
       else {
-        //Serial.println("Got from Client: " + String((char *)payload));
-        char * command=(char*)payload;
-        Serial.println("Got from Client: " + String(command));
-        
-        // JSON string was received correctly, so information can be retrieved:
-        //const char* g_brand = doc_rx["brand"];
-        //const char* g_type = doc_rx["type"];
-        //const int g_year = doc_rx["year"];
-        //const char* g_color = doc_rx["color"];
-        //Serial.println("Received guitar info from user: " + String(num));
-        //Serial.println("Brand: " + String(g_brand));
-        //Serial.println("Type: " + String(g_type));
-        //Serial.println("Year: " + String(g_year));
-        //Serial.println("Color: " + String(g_color));
-        
-        //received data from client(num)
 
-        //String data_key_from_client = doc_rx["data_key"];
-        //String data_val_from_client = doc_rx["data_val"];
-       // Serial.println(data_key_from_client);
-       // Serial.print(data_val_from_client);
-       // if (data_val_from_client.compareTo("PING")==0){
-        //       Serial.println("Client " + String(num) + " is alive");
-       // }
-          
-       // String jsonString1 = "";                           // create a JSON string for sending data to the client
-       // JsonObject object1 = doc_tx1.to<JsonObject>();      // create a JSON Object
-      //  object1["rand1"] = random(100);                    // write data into the JSON object -> I used "rand1" and "rand2" here, but you can use anything else
-       // object1["rand2"] = random(100);
-      //  serializeJson(doc_tx1, jsonString1);                // convert JSON object to string
-        //Serial.println(jsonString1);                       // print JSON string to console for debug purposes (you can comment this out)
-        //send message to connected client`
-      //  webSocket.sendPing(num,jsonString1);
+        // got from client open request
+
+        if((String(_action).compareTo("openLockers"))==0){
+        String _send_spi_response=read_json_file(SPIFFS,"/api_open_response.json");
+        //serializeJson(doc_tx,_send_spi_response);
+        // send the api response to client
+        webSocket.sendTXT(num,_send_spi_response);
+       // Serial.println("Read from file... "+_send_spi_response);
+        
+      }
+       
       }
       Serial.println("");
       break;
