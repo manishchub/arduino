@@ -1,0 +1,21 @@
+{
+	"action": "openLockers",
+	"clientId": "9090",
+	"deviceId": "10000000d0ab68db",
+	"lockerBanks": [{
+		"wago": [{
+			"serialNumber": "0030de223d0b-750-352",
+			"units": [{
+				"cardNumber": 1,
+				"portNumber": [3],
+				"wagoLockNumber": [3]
+			}]
+		}]
+	}],
+
+	"openAll": "false",
+	"peripheralId": "0",
+	"subscriptionId": "J203920265",
+	"type": "lockerBanks",
+	"version": "J203920265"
+}

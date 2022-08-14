@@ -1,0 +1,45 @@
+{
+  "success": true,
+  "statusCode": 200,
+  "transactionId": "36-characters",
+  "timestamp": "2022-07-30T10:30:20Z",
+  "deviceInfo": {
+    "ipAddress": [
+      "192.168.0.70",
+      "192.168.0.71",
+      "192.168.0.69"
+    ],
+    "type": "Linux",
+    "platform": "linux",
+    "hostname": "myhub",
+    "serialNumber": "101101001010101010"
+  },
+  "clientId": "900",
+  "action": "webSocketConnect",
+  "errorMessage": "",
+  "lockerBanks": {
+    "location": "unknown",
+    "bankName": "unknown",
+    "clientId": "900",
+    "peripheralid": "0",
+    "action": "webSocketConnect",
+    "wago": [
+      {
+        "serialNumber": "0030abcdefg8484848918",
+        "numberOfCards": 1,
+        "portsPerCard": 4
+      }
+    ],
+    "UserDevices": [
+      {
+        "serialNumber": "7839-73487934897A8",
+        "column": 0,
+        "row": 0,
+        "type": "scanner",
+        "modelName": "1210",
+        "size": ""
+      }
+    ]
+  },
+  "printers": []
+}

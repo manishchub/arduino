@@ -1,0 +1,27 @@
+{
+  "action": openLockers,
+  "transactionId": "61+D471fd0c-1acf-11ec-88d3-b827eb2aa39e",
+  "timestamp": "2022-07-30T10:30:20Z",
+  "clientId":"9090",
+  "lockerBanks": [{
+        "wago": [{
+          "units":[{
+        "cardNumber":1,
+        "portNumberWithState":[{
+			"portNumber":3,
+        "state": "Open"
+      }]
+    }],
+    "portsPerCard":8,
+        "isConnected":true,
+        "serialNumber": "0030de223d0b-750-352",
+        "numberOfCards":1,
+        "ipAddress":"7.7.7.100",
+      ]},
+        "peripheralId":"unknown",
+		  "bankName":"unknown",
+	     "location":"unknown",
+      }],
+			"success":true,
+			"statusCode":200,
+ }
