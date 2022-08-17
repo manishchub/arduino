@@ -25,7 +25,7 @@
 #include <StreamUtils.h>
 
 // SSID and password of Wifi connection:
-const char* ssid = "netter";
+const char* ssid = "ESP32";
 const char* password = "1212121212";
 WebSocketsClient webSocketCl;
 
@@ -47,7 +47,7 @@ void setup() {
   Serial.begin(115200);                               // init serial port for debugging
 
    // Connect to local WiFi
-  WiFi.begin("netter","1212121212");
+  WiFi.begin(ssid,password);
  
   while (WiFi.status() != WL_CONNECTED) {
     Serial.print(".");
@@ -62,7 +62,7 @@ void setup() {
   webSocketCl.begin("192.168.0.69", 81, "/");
   // WebSocket event handler
   webSocketCl.onEvent(webSocketEvent);
-  webSocketCl.setReconnectInterval(5000);
+  webSocketCl.setReconnectInterval(500);
 }
 
 void loop() {
@@ -73,15 +73,14 @@ void loop() {
    // send json object to server
         JsonObject object1 = doc_tx.to<JsonObject>();
         String jsonString = "";  
-        object1["brand"]="DLSim20";
-        object1["type"]="DLSim20";
-        object1["year"]="DLSim20";
-        object1["color"]="DLSim20";
+        object1["data_key"]="DLSIM_CTRL_PING";
+        object1["data_val"]="PING";
+        //object1["year"]="DLSim19";
+       // object1["color"]="DLSim19";
         serializeJson(doc_tx, jsonString);
-        Serial.println(jsonString);
-        webSocketCl.sendTXT(jsonString); 
-  
-
+       // Serial.println(jsonString);
+       //   webSocketCl.sendTXT(jsonString); 
+       // delay(5000);
 }
  
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {      // the parameters of this callback function are always the same -> num: id of the client who send the event, type: type of message, payload: actual data sent and length: length of payload
@@ -90,6 +89,7 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {      // t
     switch (type) {                                     // switch on the type of information sent
     case WStype_DISCONNECTED:                         // if a client is disconnected, then type == WStype_DISCONNECTED
       Serial.println("Server disconnected");
+      WiFi.reconnect();
       break;
     case WStype_CONNECTED:                            // if a client is connected, then type == WStype_CONNECTED
       Serial.println("Server connected");
@@ -107,11 +107,14 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {      // t
       else {
         // JSON string was received correctly, so information can be retrieved:
        
-        const String& rnd1=doc_rx["rand1"];        
-        const String& rnd2=doc_rx["rand2"];
-        Serial.println("rnd1:" + String(rnd1));
-        Serial.println("rnd1:" + String(rnd2));
-       
+        const String& data_key=doc_rx["data_key"];        
+        const String& data_val=doc_rx["data_val"];
+        Serial.println("data_key: " + String(data_key));
+        Serial.println("data_val: " + String(data_val));
+
+        if((String(data_val).compareTo("OPEN"))==0){
+          Serial.print("Got command to open");
+        }
 
              
         
