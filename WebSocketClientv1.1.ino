@@ -25,9 +25,11 @@
 #include <StreamUtils.h>
 
 // SSID and password of Wifi connection:
-const char* ssid = "ESP32";
+const char* ssid = "netter";
 const char* password = "1212121212";
 WebSocketsClient webSocketCl;
+
+uint8_t LOCK_Pin = 21; 
 
 
 // The JSON library uses static memory, so this will need to be allocated:
@@ -45,9 +47,10 @@ unsigned long previousMillis = 0;                     // we use the "millis()" c
 
 void setup() {
   Serial.begin(115200);                               // init serial port for debugging
-
+  pinMode(LOCK_Pin, OUTPUT);
+  digitalWrite(LOCK_Pin, LOW);
    // Connect to local WiFi
-  WiFi.begin(ssid,password);
+  WiFi.begin(ssid,password);  
  
   while (WiFi.status() != WL_CONNECTED) {
     Serial.print(".");
@@ -114,6 +117,10 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {      // t
 
         if((String(data_val).compareTo("OPEN"))==0){
           Serial.print("Got command to open");
+          digitalWrite(LOCK_Pin, HIGH);
+          delay(5000);
+          digitalWrite(LOCK_Pin, LOW);
+          delay(5000);
         }
 
              

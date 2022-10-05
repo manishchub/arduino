@@ -11,7 +11,7 @@
 
 
 // SSID and password of Wifi connection:
-const char* ssid = "ESP32";
+const char* ssid = "netter";
 const char* password = "1212121212";
 
 // The String below "webpage" contains the complete HTML code that is sent to the client whenever someone connects to the webserver
@@ -37,23 +37,34 @@ void setup() {
   Serial.begin(115200);                               // init serial port for debugging
 
   // Connect to Wi-Fi network with SSID and password
-  Serial.print("Setting AP (Access Point)…");
+  Serial.print("Setting STA …");
   // Remove the password parameter, if you want the AP (Access Point) to be open
 
 
     
-  WiFi.mode(WIFI_MODE_APSTA);
+  WiFi.mode(WIFI_MODE_STA);
    // Set static IP
-  IPAddress AP_LOCAL_IP(192, 168, 0, 69);
-  IPAddress AP_GATEWAY_IP(192, 168, 0, 69);
-  IPAddress AP_NETWORK_MASK(255, 255, 255, 0);
-  if (!WiFi.softAPConfig(AP_LOCAL_IP, AP_GATEWAY_IP, AP_NETWORK_MASK)) {
-    Serial.println("AP Config Failed");
+  IPAddress LOCAL_IP(192, 168, 0, 69);
+  IPAddress GATEWAY_IP(192, 168, 0, 69);
+  IPAddress NETWORK_MASK(255, 255, 255, 0);
+  if (!WiFi.config(LOCAL_IP, GATEWAY_IP, NETWORK_MASK)) {
+    Serial.println("Config Failed");
     return;
   }
-  WiFi.softAP(ssid, password);
-  IPAddress IP = WiFi.softAPIP();
-  Serial.println(IP);
+// WiFi.softAP(ssid, password);
+//  IPAddress IP = WiFi.softAPIP();
+//  Serial.println(IP);
+
+  WiFi.begin(ssid,password);
+ 
+  while (WiFi.status() != WL_CONNECTED) {
+    Serial.print(".");
+    delay(500);
+  }
+  Serial.println();
+  Serial.print("IP Address: ");
+  Serial.println(WiFi.localIP()); // Print local IP address
+
 
   server.on("/", []() {                               // define here wat the webserver needs to do
     server.send(200, "text\html", webpage);           //    -> it needs to send out the HTML string "webpage" to the client
